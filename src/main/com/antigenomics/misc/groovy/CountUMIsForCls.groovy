@@ -1,4 +1,4 @@
-package mitcr
+
 
 @Grab(group = 'com.milaboratory', module = 'mitcr-groovy', version = '1.0.3')
 import com.milaboratory.core.clone.Clone
