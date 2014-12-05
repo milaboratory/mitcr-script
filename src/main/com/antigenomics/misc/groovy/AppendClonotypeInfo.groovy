@@ -58,14 +58,17 @@ pipeline.setAnalysisListener(new DefaultAnalysisListener() {
     @Override
     void afterClusterization(CloneSetClustered clusterizedCloneSet) {
         for (Clone clone : clusterizedCloneSet.clones)
-            for (SequencingReadLink readLink : clone.backwardLinks)
+            for (SequencingReadLink readLink : clone.backwardLinks) {
+                def vIter = clone.VSegments.iterator(), jIter = clone.JSegments.iterator(),
+                    dIter = clone.DSegments.iterator()
                 readMap.put(readLink.id,
                         [
                                 clone.CDR3.sequence,
-                                clone.VSegments.iterator().next().segmentName,
-                                clone.JSegments.iterator().next().segmentName,
-                                params.gene.hasDSegment() ? clone.DSegments.iterator().next().segmentName : ""
+                                vIter.hasNext() ? vIter.next().segmentName : "",
+                                jIter.hasNext() ? jIter.next().segmentName : "",
+                                dIter.hasNext() ? dIter.next().segmentName : ""
                         ] as String[])
+            }
 
         if (mode == 1) {
             new File(outFileName).withPrintWriter { pw ->
