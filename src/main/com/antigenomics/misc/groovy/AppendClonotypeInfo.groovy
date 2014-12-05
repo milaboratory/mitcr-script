@@ -60,8 +60,12 @@ pipeline.setAnalysisListener(new DefaultAnalysisListener() {
         for (Clone clone : clusterizedCloneSet.clones)
             for (SequencingReadLink readLink : clone.backwardLinks)
                 readMap.put(readLink.id,
-                        [clone.CDR3.sequence,
-                         clone.VSegments[0].segmentName, clone.JSegments[0].segmentName] as String[])
+                        [
+                                clone.CDR3.sequence,
+                                clone.VSegments.iterator().next().segmentName,
+                                clone.JSegments.iterator().next().segmentName,
+                                params.gene.hasDSegment() ? clone.DSegments.iterator().next().segmentName : ""
+                        ] as String[])
 
         if (mode == 1) {
             new File(outFileName).withPrintWriter { pw ->
@@ -84,7 +88,7 @@ if (mode > 1) {
     while ((read = reads.take()) != null) {
         def readInfo = readMap[read.id()]
         if (readInfo != null) {
-            def descr = read.description + " CDR3:" + readInfo[0] + " V:" + readInfo[1] + " J:" + readInfo[2]
+            def descr = read.description + " CDR3:" + readInfo[0] + " V:" + readInfo[1] + " J:" + readInfo[2] + " D:" + readInfo[3]
             def data = mode == 2 ? read.getData() : new NucleotideSQPair("")
             def read2 = new SSequencingReadImpl(descr, data, read.id())
             writer.write(read2)
